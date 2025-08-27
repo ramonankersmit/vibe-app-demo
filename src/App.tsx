@@ -1,15 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect, ComponentType } from 'react';
+import Home from './Home';
+import About from './About';
+
+const routes: Record<string, ComponentType> = {
+  '#/': Home,
+  '#/about': About,
+};
 
 export default function App() {
-  const [count, setCount] = useState(0);
+  const [route, setRoute] = useState(window.location.hash || '#/');
+
+  useEffect(() => {
+    const onHashChange = () => setRoute(window.location.hash || '#/');
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  const Page = routes[route] || Home;
+
   return (
-    <div className="app">
-      <div className="card">
-        <h1>Hallo wereld 👋</h1>
-        <small>Codex → Codespaces → GitHub</small>
-        <p style={{ marginTop: 12 }}>Kliks: {count}</p>
-        <button onClick={() => setCount((c) => c + 1)}>+1</button>
-      </div>
-    </div>
+    <>
+      <header>
+        <nav>
+          <a href="#/">Home</a> | <a href="#/about">About</a>
+        </nav>
+      </header>
+      <Page />
+    </>
   );
 }
